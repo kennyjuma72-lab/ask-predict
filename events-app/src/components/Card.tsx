@@ -1,91 +1,97 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Surface } from 'react-native-paper';
+import { View, Text, StyleSheet } from 'react-native';
+import { colors, radii, spacing, typography, shadows } from '../utils/tokens';
 
 interface CardProps {
   children: React.ReactNode;
   style?: any;
-  elevation?: number;
+  variant?: 'elevated' | 'outlined' | 'flat';
+  padding?: keyof typeof spacing | 'none';
 }
 
 interface CardHeaderProps {
   title: string;
   subtitle?: string;
+  action?: React.ReactNode;
   style?: any;
 }
 
-interface CardBodyProps {
+interface SectionProps {
   children: React.ReactNode;
   style?: any;
 }
 
-interface CardFooterProps {
-  children: React.ReactNode;
-  style?: any;
-}
-
-export const Card: React.FC<CardProps> = ({ children, style, elevation = 2 }) => (
-  <Surface style={[styles.card, { elevation }, style]}>
-    {children}
-  </Surface>
-);
-
-export const CardHeader: React.FC<CardHeaderProps> = ({ title, subtitle, style }) => (
-  <View style={[styles.header, style]}>
-    <Text style={styles.title}>{title}</Text>
-    {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
-  </View>
-);
-
-export const CardBody: React.FC<CardBodyProps> = ({ children, style }) => (
-  <View style={[styles.body, style]}>
-    {children}
-  </View>
-);
-
-export const CardFooter: React.FC<CardFooterProps> = ({ children, style }) => (
-  <View style={[styles.footer, style]}>
-    {children}
-  </View>
-);
-
-// Fallback Text component
-const Text: React.FC<any> = ({ children, style }) => {
-  const { Text: RNText } = require('react-native');
-  return <RNText style={style}>{children}</RNText>;
+export const Card: React.FC<CardProps> = ({
+  children,
+  style,
+  variant = 'elevated',
+  padding = 'lg',
+}) => {
+  const pad = padding === 'none' ? 0 : spacing[padding];
+  return (
+    <View
+      style={[
+        styles.card,
+        variant === 'elevated' && shadows.sm,
+        variant === 'outlined' && { borderWidth: 1, borderColor: colors.border },
+        variant === 'flat' && { backgroundColor: colors.surfaceMuted },
+        { padding: pad },
+        style,
+      ]}
+    >
+      {children}
+    </View>
+  );
 };
+
+export const CardHeader: React.FC<CardHeaderProps> = ({ title, subtitle, action, style }) => (
+  <View style={[styles.header, style]}>
+    <View style={{ flex: 1 }}>
+      <Text style={[typography.h3, { color: colors.text }]}>{title}</Text>
+      {subtitle ? (
+        <Text style={[typography.caption, { color: colors.textMuted, marginTop: 2 }]}>
+          {subtitle}
+        </Text>
+      ) : null}
+    </View>
+    {action ? <View style={{ marginLeft: spacing.md }}>{action}</View> : null}
+  </View>
+);
+
+export const CardBody: React.FC<SectionProps> = ({ children, style }) => (
+  <View style={[{ paddingVertical: spacing.sm }, style]}>{children}</View>
+);
+
+export const CardFooter: React.FC<SectionProps> = ({ children, style }) => (
+  <View
+    style={[
+      {
+        paddingTop: spacing.md,
+        marginTop: spacing.md,
+        borderTopWidth: 1,
+        borderTopColor: colors.border,
+        flexDirection: 'row',
+        alignItems: 'center',
+      },
+      style,
+    ]}
+  >
+    {children}
+  </View>
+);
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    marginVertical: 8,
-    backgroundColor: '#FFFFFF',
+    borderRadius: radii.lg,
+    backgroundColor: colors.surface,
+    marginVertical: spacing.sm,
   },
   header: {
-    paddingBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingBottom: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
-    marginBottom: 12,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#212121',
-  },
-  subtitle: {
-    fontSize: 13,
-    color: '#757575',
-    marginTop: 4,
-  },
-  body: {
-    paddingVertical: 8,
-  },
-  footer: {
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#E0E0E0',
-    marginTop: 12,
+    borderBottomColor: colors.border,
+    marginBottom: spacing.md,
   },
 });

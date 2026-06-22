@@ -1,88 +1,50 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { Chip } from 'react-native-paper';
+import { View, Text, StyleSheet } from 'react-native';
+import { colors, radii, typography } from '../utils/tokens';
 
-export type BadgeType = 'success' | 'error' | 'warning' | 'info' | 'neutral';
+export type BadgeType = 'success' | 'error' | 'warning' | 'info' | 'neutral' | 'brand';
 
 interface BadgeProps {
   label: string;
   type?: BadgeType;
+  dot?: boolean;
   style?: any;
 }
 
-const getBackgroundColor = (type: BadgeType) => {
-  switch (type) {
-    case 'success':
-      return '#E8F5E9';
-    case 'error':
-      return '#FFEBEE';
-    case 'warning':
-      return '#FFF3E0';
-    case 'info':
-      return '#E3F2FD';
-    case 'neutral':
-    default:
-      return '#F5F5F5';
-  }
+const palette: Record<BadgeType, { bg: string; fg: string; dot: string }> = {
+  success: { bg: colors.successSoft, fg: '#15803d', dot: colors.success },
+  error: { bg: colors.dangerSoft, fg: '#b91c1c', dot: colors.danger },
+  warning: { bg: colors.warningSoft, fg: '#b45309', dot: colors.warning },
+  info: { bg: colors.infoSoft, fg: '#0369a1', dot: colors.info },
+  brand: { bg: colors.primarySoft, fg: colors.primaryDark, dot: colors.primary },
+  neutral: { bg: '#f1f5f9', fg: '#334155', dot: '#64748b' },
 };
 
-const getTextColor = (type: BadgeType) => {
-  switch (type) {
-    case 'success':
-      return '#2E7D32';
-    case 'error':
-      return '#C62828';
-    case 'warning':
-      return '#E65100';
-    case 'info':
-      return '#1565C0';
-    case 'neutral':
-    default:
-      return '#424242';
-  }
+export const Badge: React.FC<BadgeProps> = ({ label, type = 'neutral', dot = true, style }) => {
+  const p = palette[type];
+  return (
+    <View style={[styles.badge, { backgroundColor: p.bg }, style]}>
+      {dot ? <View style={[styles.dot, { backgroundColor: p.dot }]} /> : null}
+      <Text style={[typography.caption, { color: p.fg }]} numberOfLines={1}>
+        {label}
+      </Text>
+    </View>
+  );
 };
-
-const getIcon = (type: BadgeType) => {
-  switch (type) {
-    case 'success':
-      return 'check-circle';
-    case 'error':
-      return 'alert-circle';
-    case 'warning':
-      return 'alert';
-    case 'info':
-      return 'information';
-    case 'neutral':
-    default:
-      return 'circle';
-  }
-};
-
-export const Badge: React.FC<BadgeProps> = ({ label, type = 'neutral', style }) => (
-  <Chip
-    icon={getIcon(type)}
-    style={[
-      styles.badge,
-      {
-        backgroundColor: getBackgroundColor(type),
-      },
-      style,
-    ]}
-    textStyle={{
-      color: getTextColor(type),
-      fontSize: 12,
-      fontWeight: '600',
-    }}
-    compact
-  >
-    {label}
-  </Chip>
-);
 
 const styles = StyleSheet.create({
   badge: {
-    borderRadius: 12,
-    marginHorizontal: 4,
-    marginVertical: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    borderRadius: radii.pill,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 6,
   },
 });

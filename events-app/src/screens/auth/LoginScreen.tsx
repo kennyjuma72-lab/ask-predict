@@ -6,20 +6,14 @@ import {
   KeyboardAvoidingView,
   Platform,
   TouchableOpacity,
+  Text,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import {
-  Text,
-  TextInput,
-  Button,
-  Card,
-  Title,
-  Paragraph,
-  Divider,
-} from 'react-native-paper';
+import { TextInput } from 'react-native-paper';
 import { useAuth } from '../../services/AuthContext';
 import { useToast } from '../../services/ToastContext';
-import { theme } from '../../utils/theme';
+import { Button } from '../../components/Button';
+import { colors, radii, spacing, typography, shadows } from '../../utils/tokens';
 
 interface LoginScreenProps {
   navigation: any;
@@ -38,7 +32,6 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
       showToast('Please fill in all fields', 'warning');
       return;
     }
-
     setLoading(true);
     try {
       await signIn(email, password);
@@ -52,137 +45,143 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.header}>
-          <Title style={styles.title}>Welcome Back</Title>
-          <Paragraph style={styles.subtitle}>
-            Sign in to discover amazing events
-          </Paragraph>
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.brandMark}>
+          <View style={styles.brandDot} />
+          <Text style={[typography.overline, { color: colors.primaryDark }]}>EVENTS</Text>
         </View>
 
-        <Card style={styles.card}>
-          <Card.Content>
+        <View style={styles.header}>
+          <Text style={[typography.display, { color: colors.text }]}>Welcome back</Text>
+          <Text style={[typography.body, { color: colors.textMuted, marginTop: 8 }]}>
+            Sign in to continue discovering events.
+          </Text>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={[typography.caption, styles.label]}>Email</Text>
+          <TextInput
+            value={email}
+            onChangeText={setEmail}
+            mode="outlined"
+            placeholder="you@example.com"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="email"
+            outlineColor={colors.border}
+            activeOutlineColor={colors.primary}
+            style={styles.input}
+            left={<TextInput.Icon icon="email-outline" />}
+          />
+
+          <Text style={[typography.caption, styles.label, { marginTop: spacing.md }]}>
+            Password
+          </Text>
+          <View style={{ position: 'relative' }}>
             <TextInput
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
+              value={password}
+              onChangeText={setPassword}
               mode="outlined"
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoComplete="email"
+              placeholder="••••••••"
+              secureTextEntry={!showPassword}
+              autoComplete="password"
+              outlineColor={colors.border}
+              activeOutlineColor={colors.primary}
               style={styles.input}
-            />
-
-            <View style={styles.passwordContainer}>
-              <TextInput
-                label="Password"
-                value={password}
-                onChangeText={setPassword}
-                mode="outlined"
-                secureTextEntry={!showPassword}
-                autoComplete="password"
-                style={[styles.input, styles.passwordInput]}
-              />
-              <TouchableOpacity
-                style={styles.eyeButton}
-                onPress={() => setShowPassword(!showPassword)}
-              >
-                <MaterialIcons
-                  name={showPassword ? "visibility-off" : "visibility"}
-                  size={24}
-                  color="#666"
+              left={<TextInput.Icon icon="lock-outline" />}
+              right={
+                <TextInput.Icon
+                  icon={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                  onPress={() => setShowPassword((v) => !v)}
                 />
-              </TouchableOpacity>
-            </View>
+              }
+            />
+          </View>
 
-            <Button
-              mode="contained"
-              onPress={handleLogin}
-              loading={loading}
-              disabled={loading}
-              style={styles.button}
-            >
-              Sign In
-            </Button>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('ForgotPassword')}
+            style={{ alignSelf: 'flex-end', marginTop: 4, marginBottom: spacing.lg }}
+          >
+            <Text style={[typography.caption, { color: colors.primary }]}>
+              Forgot password?
+            </Text>
+          </TouchableOpacity>
 
-            <Divider style={styles.divider} />
+          <Button
+            label="Sign in"
+            onPress={handleLogin}
+            loading={loading}
+            size="large"
+            fullWidth
+          />
 
-            <Button
-              mode="outlined"
-              onPress={() => navigation.navigate('Signup')}
-              style={styles.button}
-            >
-              Create Account
-            </Button>
+          <View style={styles.dividerRow}>
+            <View style={styles.divider} />
+            <Text style={[typography.caption, { color: colors.textSubtle, marginHorizontal: 12 }]}>
+              OR
+            </Text>
+            <View style={styles.divider} />
+          </View>
 
-            <Button
-              mode="text"
-              onPress={() => navigation.navigate('ForgotPassword')}
-              style={styles.forgotButton}
-            >
-              Forgot Password?
-            </Button>
-          </Card.Content>
-        </Card>
+          <Button
+            label="Create new account"
+            variant="outline"
+            onPress={() => navigation.navigate('Signup')}
+            fullWidth
+          />
+        </View>
+
+        <Text style={[typography.caption, styles.footer]}>
+          By signing in you agree to our Terms and Privacy Policy.
+        </Text>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  scrollContainer: {
+  container: { flex: 1, backgroundColor: colors.bg },
+  scroll: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: 20,
+    padding: spacing.xl,
   },
-  header: {
+  brandMark: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: spacing.xl,
   },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: theme.colors.onBackground,
-    marginBottom: 8,
+  brandDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: colors.primary,
+    marginRight: 8,
   },
-  subtitle: {
-    fontSize: 16,
-    color: theme.colors.onSurfaceVariant,
-    textAlign: 'center',
-  },
+  header: { marginBottom: spacing.xl },
   card: {
-    elevation: 4,
+    backgroundColor: colors.surface,
+    borderRadius: radii.xl,
+    padding: spacing.xl,
+    ...shadows.md,
   },
-  input: {
-    marginBottom: 16,
+  label: { color: colors.textMuted, marginBottom: 6 },
+  input: { backgroundColor: colors.surface, fontSize: 15 },
+  dividerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: spacing.lg,
   },
-  passwordContainer: {
-    position: 'relative',
-    marginBottom: 16,
-  },
-  passwordInput: {
-    paddingRight: 50,
-  },
-  eyeButton: {
-    position: 'absolute',
-    right: 12,
-    top: 12,
-    padding: 4,
-  },
-  button: {
-    marginTop: 8,
-    marginBottom: 8,
-  },
-  divider: {
-    marginVertical: 16,
-  },
-  forgotButton: {
-    marginTop: 8,
+  divider: { flex: 1, height: 1, backgroundColor: colors.border },
+  footer: {
+    textAlign: 'center',
+    color: colors.textSubtle,
+    marginTop: spacing.xl,
   },
 });

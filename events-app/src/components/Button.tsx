@@ -1,8 +1,8 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { Button as PaperButton, ActivityIndicator } from 'react-native-paper';
+import { StyleSheet, ActivityIndicator, View, Pressable, Text } from 'react-native';
+import { colors, radii, spacing, typography } from '../utils/tokens';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'ghost';
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'ghost' | 'outline';
 export type ButtonSize = 'small' | 'medium' | 'large';
 
 interface ButtonProps {
@@ -12,53 +12,24 @@ interface ButtonProps {
   size?: ButtonSize;
   loading?: boolean;
   disabled?: boolean;
-  icon?: string;
+  icon?: React.ReactNode;
+  fullWidth?: boolean;
   style?: any;
 }
 
-const getBackgroundColor = (variant: ButtonVariant) => {
-  switch (variant) {
-    case 'primary':
-      return '#6B5B9A';
-    case 'secondary':
-      return '#C9507B';
-    case 'danger':
-      return '#F44336';
-    case 'success':
-      return '#4CAF50';
-    case 'ghost':
-      return 'transparent';
-    default:
-      return '#6B5B9A';
-  }
+const variantStyles: Record<ButtonVariant, { bg: string; fg: string; border?: string }> = {
+  primary: { bg: colors.primary, fg: '#ffffff' },
+  secondary: { bg: colors.secondary, fg: '#ffffff' },
+  danger: { bg: colors.danger, fg: '#ffffff' },
+  success: { bg: colors.success, fg: '#ffffff' },
+  ghost: { bg: 'transparent', fg: colors.primary },
+  outline: { bg: 'transparent', fg: colors.text, border: colors.border },
 };
 
-const getTextColor = (variant: ButtonVariant) => {
-  return variant === 'ghost' ? '#6B5B9A' : '#FFFFFF';
-};
-
-const getPadding = (size: ButtonSize) => {
-  switch (size) {
-    case 'small':
-      return { paddingVertical: 6, paddingHorizontal: 12 };
-    case 'large':
-      return { paddingVertical: 14, paddingHorizontal: 24 };
-    case 'medium':
-    default:
-      return { paddingVertical: 10, paddingHorizontal: 16 };
-  }
-};
-
-const getFontSize = (size: ButtonSize) => {
-  switch (size) {
-    case 'small':
-      return 12;
-    case 'large':
-      return 16;
-    case 'medium':
-    default:
-      return 14;
-  }
+const sizeStyles: Record<ButtonSize, { paddingVertical: number; paddingHorizontal: number; fontSize: number }> = {
+  small: { paddingVertical: 8, paddingHorizontal: 14, fontSize: 13 },
+  medium: { paddingVertical: 12, paddingHorizontal: 18, fontSize: 14 },
+  large: { paddingVertical: 15, paddingHorizontal: 22, fontSize: 16 },
 };
 
 export const Button: React.FC<ButtonProps> = ({
@@ -69,41 +40,62 @@ export const Button: React.FC<ButtonProps> = ({
   loading = false,
   disabled = false,
   icon,
+  fullWidth,
   style,
 }) => {
-  const backgroundColor = getBackgroundColor(variant);
-  const textColor = getTextColor(variant);
-  const padding = getPadding(size);
-  const fontSize = getFontSize(size);
+  const v = variantStyles[variant];
+  const s = sizeStyles[size];
+  const isDisabled = disabled || loading;
 
   return (
-    <PaperButton
+    <Pressable
       onPress={onPress}
-      disabled={disabled || loading}
-      mode={variant === 'ghost' ? 'text' : 'contained'}
-      style={[
-        styles.button,
+      disabled={isDisabled}
+      style={({ pressed }) => [
+        styles.base,
         {
-          backgroundColor: variant === 'ghost' ? 'transparent' : backgroundColor,
-          ...padding,
+          backgroundColor: v.bg,
+          borderColor: v.border ?? 'transparent',
+          borderWidth: v.border ? 1 : 0,
+          paddingVertical: s.paddingVertical,
+          paddingHorizontal: s.paddingHorizontal,
+          opacity: isDisabled ? 0.55 : pressed ? 0.85 : 1,
+          alignSelf: fullWidth ? 'stretch' : 'flex-start',
         },
         style,
       ]}
-      labelStyle={{
-        color: textColor,
-        fontSize,
-        fontWeight: '600',
-      }}
-      icon={loading ? () => <ActivityIndicator size={size === 'small' ? 14 : 18} color={textColor} /> : icon}
+      android_ripple={{ color: 'rgba(255,255,255,0.18)' }}
     >
-      {label}
-    </PaperButton>
+      <View style={styles.row}>
+        {loading ? (
+          <ActivityIndicator size="small" color={v.fg} style={{ marginRight: icon || label ? 8 : 0 }} />
+        ) : icon ? (
+          <View style={{ marginRight: 8 }}>{icon}</View>
+        ) : null}
+        <Text
+          style={[
+            typography.bodyStrong,
+            { color: v.fg, fontSize: s.fontSize, textAlign: 'center' },
+          ]}
+          numberOfLines={1}
+        >
+          {label}
+        </Text>
+      </View>
+    </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
-  button: {
-    borderRadius: 8,
-    minWidth: 100,
+  base: {
+    borderRadius: radii.md,
+    minHeight: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
