@@ -455,9 +455,7 @@ export default function ChatScreen({ navigation, route }: ChatScreenProps) {
           <TouchableOpacity 
             style={styles.networkingCard}
             onPress={() => {
-                onPress={() => {
-                  showToast('Video networking sessions will be available soon!', 'info');
-                }}
+              showToast('Video networking sessions will be available soon!', 'info');
             }}
           >
             <View style={styles.cardIcon}>
