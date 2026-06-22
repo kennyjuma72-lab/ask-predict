@@ -1,56 +1,133 @@
 @import "tailwindcss";
 
 :root {
-  /* FemVents Brand Colors */
+  /* FemVents Brand */
   --primary-purple: #6B5B9A;
   --primary-purple-dark: #5B4B8A;
   --secondary-rose: #C9507B;
   --secondary-rose-dark: #B4406C;
   --accent-coral: #F08070;
   --accent-coral-dark: #E87461;
-  
-  --background: #ffffff;
-  --foreground: #171717;
+
+  /* Surfaces */
+  --background: #fafaf9;
+  --surface: #ffffff;
+  --surface-subtle: #f5f3f7;
+  --foreground: #14121a;
+  --foreground-muted: #6b6776;
+  --border-subtle: #ece9f0;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  
-  /* FemVents Brand Colors */
+  --color-foreground-muted: var(--foreground-muted);
+  --color-surface: var(--surface);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-border-subtle: var(--border-subtle);
+
   --color-primary-purple: var(--primary-purple);
   --color-secondary-rose: var(--secondary-rose);
   --color-accent-coral: var(--accent-coral);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #0f0d14;
+    --surface: #181520;
+    --surface-subtle: #1f1b29;
     --foreground: #ededed;
+    --foreground-muted: #9b96a8;
+    --border-subtle: #2a2435;
   }
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.02em;
+}
+
+/* Refined focus */
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px rgb(201 80 123 / 0.5);
+  border-radius: 8px;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(0 0 0 / 0.1);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(0 0 0 / 0.2);
+  background-clip: padding-box;
+  border: 2px solid transparent;
 }
 
 /* Animations */
 @keyframes blob {
-  0%, 100% {
-    transform: translate(0, 0) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
 }
 
-.animate-blob {
-  animation: blob 7s infinite;
+.animate-blob { animation: blob 7s infinite; }
+.animate-fade-in-up { animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-subtle) 0%, var(--border-subtle) 50%, var(--surface-subtle) 100%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
+}
+
+/* Brand gradient utility */
+.bg-femvents-gradient {
+  background-image: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-rose) 50%, var(--accent-coral) 100%);
+}
+.text-femvents-gradient {
+  background-image: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-rose) 50%, var(--accent-coral) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

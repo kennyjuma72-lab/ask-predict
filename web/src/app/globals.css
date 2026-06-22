@@ -1,16 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  /* Modern clean background */
-  --background: #ffffff;
+  /* Clean editorial surface */
+  --background: #f9f7f4;
   --foreground: #0a0a0a;
-  --muted: #f5f5f5;
-  --muted-foreground: #737373;
-  --border: #e5e5e5;
+  --muted: #f1ede7;
+  --muted-foreground: #6b6660;
+  --border: #e5e1d9;
 
-  /* Brand accents */
-  --accent: #FF3366;
-  /* Vibrant Rose */
+  /* FemVents brand accents */
+  --brand-purple: #6B5B9A;
+  --brand-rose: #C9507B;
+  --brand-coral: #F08070;
+  --accent: #C9507B;
   --accent-foreground: #ffffff;
 }
 
@@ -22,9 +24,18 @@
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-brand-purple: var(--brand-purple);
+  --color-brand-rose: var(--brand-rose);
+  --color-brand-coral: var(--brand-coral);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
@@ -32,47 +43,70 @@ body {
   margin: 0;
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
-  /* Dot Pattern Background */
-  background-image: radial-gradient(#e5e5e5 1px, transparent 1px);
-  background-size: 24px 24px;
-  -webkit-font-smoothing: antialiased;
 }
 
-/* Utilities */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-/* Animations */
-@keyframes marquee {
-  0% {
-    transform: translateX(0%);
-  }
-
-  100% {
-    transform: translateX(-100%);
-  }
-}
-
-.animate-marquee {
-  animation: marquee 30s linear infinite;
-}
-
-.pause-on-hover:hover {
-  animation-play-state: paused;
-}
-
-/* Typography Overrides */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.03em;
-  /* Tight tracking for modern look */
+  font-weight: 700;
+}
+
+*:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px rgb(201 80 123 / 0.55);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgb(0 0 0 / 0.12);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover { background: rgb(0 0 0 / 0.22); background-clip: padding-box; border: 2px solid transparent; }
+
+/* Glass + gradient utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: saturate(140%) blur(14px);
+  -webkit-backdrop-filter: saturate(140%) blur(14px);
+  border: 1px solid rgba(15, 15, 15, 0.06);
+}
+
+.bg-brand-gradient {
+  background-image: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-rose) 55%, var(--brand-coral) 100%);
+}
+.text-brand-gradient {
+  background-image: linear-gradient(135deg, var(--brand-purple) 0%, var(--brand-rose) 55%, var(--brand-coral) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Marquee */
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-100%); }
+}
+.animate-marquee { animation: marquee 30s linear infinite; }
+.pause-on-hover:hover { animation-play-state: paused; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up { animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
